@@ -126,4 +126,3 @@ If you find this project useful, please consider supporting me:
 ---
 
 Created with ❤️ by [SamSeen](https://buymeacoffee.com/samseen)
-# scriptmark
