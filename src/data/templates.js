@@ -1,35 +1,35 @@
 export const templates = [
-  {
-    name: "Blank Script",
-    label: "My Bookmarklet",
-    description: "Start from scratch.",
-    code: `// Your code here
+    {
+        name: "Blank Script",
+        label: "My Bookmarklet",
+        description: "Start from scratch.",
+        code: `// Your code here
 alert("Hello from your bookmarklet!");`
-  },
-  {
-    name: "Edit Page Content",
-    label: "Edit Page",
-    description: "Make the entire webpage editable like a document.",
-    code: `document.body.contentEditable = 'true';
+    },
+    {
+        name: "Edit Page Content",
+        label: "Edit Page",
+        description: "Make the entire webpage editable like a document.",
+        code: `document.body.contentEditable = 'true';
 document.designMode = 'on';
 alert('You can now edit the page content!');`
-  },
-  {
-    name: "Dark Mode Toggle",
-    label: "Dark Mode",
-    description: "Invert colors to create a quick dark mode.",
-    code: `const filter = 'invert(1) hue-rotate(180deg)';
+    },
+    {
+        name: "Dark Mode Toggle",
+        label: "Dark Mode",
+        description: "Invert colors to create a quick dark mode.",
+        code: `const filter = 'invert(1) hue-rotate(180deg)';
 if (document.body.style.filter === filter) {
   document.body.style.filter = '';
 } else {
   document.body.style.filter = filter;
 }`
-  },
-  {
-    name: "Extract All Images",
-    label: "Get Images",
-    description: "Open a new tab with all images and download buttons.",
-    code: `const seen = new Set();
+    },
+    {
+        name: "Extract All Images",
+        label: "Get Images",
+        description: "Open a new tab with all images and download buttons.",
+        code: `const seen = new Set();
 const images = [];
 
 // Helper to add image
@@ -147,12 +147,12 @@ if (images.length === 0) {
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
 }`
-  },
-  {
-    name: "Zap Elements",
-    label: "Zap",
-    description: "Click any element on the page to remove it instantly.",
-    code: `if (window._zapMode) {
+    },
+    {
+        name: "Zap Elements",
+        label: "Zap",
+        description: "Click any element on the page to remove it instantly.",
+        code: `if (window._zapMode) {
     document.removeEventListener('click', window._zapClick, true);
     document.removeEventListener('mouseover', window._zapHover);
     document.removeEventListener('mouseout', window._zapOut);
@@ -177,12 +177,72 @@ if (images.length === 0) {
     window._zapMode = true;
     alert('Zap Mode ON! Click elements to remove them.\\nClick bookmarklet again to stop.');
 }`
-  },
-  {
-    name: "Enable Right-Click",
-    label: "Right Click",
-    description: "Re-enable right-click context menu and text selection.",
-    code: `(function() {
+    },
+    {
+        name: "Anti Zap (Isolate)",
+        label: "Isolate",
+        description: "Click an element to keep it and remove everything else.",
+        code: `if (window._reverseZapMode) {
+    document.removeEventListener('click', window._reverseZapClick, true);
+    document.removeEventListener('mouseover', window._reverseZapHover);
+    document.removeEventListener('mouseout', window._reverseZapOut);
+    window._reverseZapMode = false;
+    alert('Reverse Zap Mode OFF');
+} else {
+    window._reverseZapClick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const target = e.target;
+        
+        // Remove hover effect
+        target.style.outline = '';
+        
+        // Get all elements in the body
+        const allElements = document.body.querySelectorAll('*');
+        
+        // Keep track of the target and its ancestors
+        const keepElements = new Set();
+        let current = target;
+        while (current && current !== document.body) {
+            keepElements.add(current);
+            current = current.parentElement;
+        }
+        
+        // Also keep all descendants of the target
+        target.querySelectorAll('*').forEach(el => keepElements.add(el));
+        
+        // Hide all elements that are not in the keep set
+        allElements.forEach(el => {
+            if (!keepElements.has(el)) {
+                el.style.display = 'none';
+            }
+        });
+        
+        // Turn off the mode after isolation
+        document.removeEventListener('click', window._reverseZapClick, true);
+        document.removeEventListener('mouseover', window._reverseZapHover);
+        document.removeEventListener('mouseout', window._reverseZapOut);
+        window._reverseZapMode = false;
+    };
+    window._reverseZapHover = function(e) {
+        e.target.style.outline = '2px solid green';
+    };
+    window._reverseZapOut = function(e) {
+        e.target.style.outline = '';
+    };
+    document.addEventListener('click', window._reverseZapClick, true);
+    document.addEventListener('mouseover', window._reverseZapHover);
+    document.addEventListener('mouseout', window._reverseZapOut);
+    window._reverseZapMode = true;
+    alert('Reverse Zap Mode ON! Click an element to keep it and remove everything else.');
+}`
+    },
+    {
+        name: "Enable Right-Click",
+        label: "Right Click",
+        description: "Re-enable right-click context menu and text selection.",
+        code: `(function() {
     function unbindAll(el) {
         ['contextmenu', 'selectstart', 'dragstart', 'copy', 'cut', 'paste', 'mousedown', 'mouseup'].forEach(ev => {
             el['on' + ev] = null;
@@ -196,12 +256,12 @@ if (images.length === 0) {
     document.head.appendChild(css);
     alert('Right-click & selection re-enabled!');
 })();`
-  },
-  {
-    name: "Visual Inspector",
-    label: "Inspect",
-    description: "Hover over elements to see their font and color details.",
-    code: `const box = document.createElement('div');
+    },
+    {
+        name: "Visual Inspector",
+        label: "Inspect",
+        description: "Hover over elements to see their font and color details.",
+        code: `const box = document.createElement('div');
 box.style.cssText = 'position:fixed;padding:10px;background:rgba(0,0,0,0.8);color:#fff;border-radius:5px;pointer-events:none;z-index:99999;font-size:12px;font-family:monospace;white-space:pre;';
 document.body.appendChild(box);
 
@@ -216,12 +276,12 @@ document.addEventListener('mousemove', function(e) {
 });
 document.addEventListener('mouseout', () => box.style.display = 'none');
 document.addEventListener('mouseover', () => box.style.display = 'block');`
-  },
-  {
-    name: "Show Alt Text",
-    label: "Show Alt",
-    description: "Overlay alt text on images to check accessibility.",
-    code: `document.querySelectorAll('img').forEach(img => {
+    },
+    {
+        name: "Show Alt Text",
+        label: "Show Alt",
+        description: "Overlay alt text on images to check accessibility.",
+        code: `document.querySelectorAll('img').forEach(img => {
     const alt = img.alt || 'MISSING ALT';
     const div = document.createElement('div');
     div.textContent = alt;
@@ -234,21 +294,21 @@ document.addEventListener('mouseover', () => box.style.display = 'block');`
     document.body.appendChild(div);
 });
 alert('Alt text overlay added!');`
-  },
-  {
-    name: "Page Speed Check",
-    label: "Check Speed",
-    description: "Show basic page performance timing stats.",
-    code: `const p = window.performance.timing;
+    },
+    {
+        name: "Page Speed Check",
+        label: "Check Speed",
+        description: "Show basic page performance timing stats.",
+        code: `const p = window.performance.timing;
 const loadTime = (p.loadEventEnd - p.navigationStart) / 1000;
 const domTime = (p.domComplete - p.domLoading) / 1000;
 alert(\`Page Load: \${loadTime.toFixed(2)}s\nDOM Process: \${domTime.toFixed(2)}s\nScripts: \${document.scripts.length}\nResources: \${performance.getEntries().length}\`);`
-  },
-  {
-    name: "Remove Sticky Headers/Footers",
-    label: "Kill Sticky",
-    description: "Remove elements that stick to the screen (position: fixed).",
-    code: `const elements = document.querySelectorAll('*');
+    },
+    {
+        name: "Remove Sticky Headers/Footers",
+        label: "Kill Sticky",
+        description: "Remove elements that stick to the screen (position: fixed).",
+        code: `const elements = document.querySelectorAll('*');
 let count = 0;
 for (let i = 0; i < elements.length; i++) {
     const style = window.getComputedStyle(elements[i]);
@@ -258,12 +318,12 @@ for (let i = 0; i < elements.length; i++) {
     }
 }
 alert('Removed ' + count + ' sticky elements.');`
-  },
-  {
-    name: "Insert Text by Class",
-    label: "Insert Text",
-    description: "Insert predefined text into elements with a specific class name.",
-    code: `// Change these values as needed
+    },
+    {
+        name: "Insert Text by Class",
+        label: "Insert Text",
+        description: "Insert predefined text into elements with a specific class name.",
+        code: `// Change these values as needed
 const className = 'target-class';
 const textToInsert = 'Your predefined text here';
 
@@ -276,12 +336,12 @@ if (elements.length === 0) {
     });
     alert('Inserted text into ' + elements.length + ' element(s) with class: ' + className);
 }`
-  },
-  {
-    name: "Reveal Passwords",
-    label: "Show Pass",
-    description: "Reveal hidden passwords in password input fields.",
-    code: `const passwords = document.querySelectorAll('input[type="password"]');
+    },
+    {
+        name: "Reveal Passwords",
+        label: "Show Pass",
+        description: "Reveal hidden passwords in password input fields.",
+        code: `const passwords = document.querySelectorAll('input[type="password"]');
 if (passwords.length === 0) {
     alert('No password fields found on this page.');
 } else {
@@ -290,5 +350,5 @@ if (passwords.length === 0) {
     });
     alert('Revealed ' + passwords.length + ' password field(s).');
 }`
-  }
+    }
 ];
