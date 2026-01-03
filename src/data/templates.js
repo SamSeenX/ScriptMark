@@ -156,9 +156,31 @@ if (images.length === 0) {
     document.removeEventListener('click', window._zapClick, true);
     document.removeEventListener('mouseover', window._zapHover);
     document.removeEventListener('mouseout', window._zapOut);
+    document.removeEventListener('keydown', window._zapEsc);
+    if (window._zapBanner) window._zapBanner.remove();
+    document.body.style.cursor = '';
     window._zapMode = false;
-    alert('Zap Mode OFF');
 } else {
+    // Create visual indicator banner
+    const banner = document.createElement('div');
+    banner.id = '_zapBanner';
+    banner.innerHTML = '⚡ <strong>ZAP MODE</strong> - Click elements to remove them | Press <kbd>ESC</kbd> to exit';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#ff4444,#cc0000);color:#fff;padding:12px 20px;text-align:center;font-family:system-ui,sans-serif;font-size:14px;font-weight:500;z-index:2147483647;box-shadow:0 2px 10px rgba(0,0,0,0.3);border-bottom:2px solid #fff;animation:zapPulse 2s ease-in-out infinite;';
+    
+    // Add animation
+    if (!document.getElementById('_zapStyles')) {
+        const style = document.createElement('style');
+        style.id = '_zapStyles';
+        style.textContent = '@keyframes zapPulse{0%,100%{opacity:1}50%{opacity:0.85}}kbd{background:#fff;color:#cc0000;padding:2px 6px;border-radius:3px;font-family:monospace;font-size:12px;font-weight:bold;}';
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(banner);
+    window._zapBanner = banner;
+    
+    // Change cursor
+    document.body.style.cursor = 'crosshair';
+    
     window._zapClick = function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -171,11 +193,22 @@ if (images.length === 0) {
     window._zapOut = function(e) {
         e.target.style.outline = '';
     };
+    window._zapEsc = function(e) {
+        if (e.key === 'Escape') {
+            document.removeEventListener('click', window._zapClick, true);
+            document.removeEventListener('mouseover', window._zapHover);
+            document.removeEventListener('mouseout', window._zapOut);
+            document.removeEventListener('keydown', window._zapEsc);
+            if (window._zapBanner) window._zapBanner.remove();
+            document.body.style.cursor = '';
+            window._zapMode = false;
+        }
+    };
     document.addEventListener('click', window._zapClick, true);
     document.addEventListener('mouseover', window._zapHover);
     document.addEventListener('mouseout', window._zapOut);
+    document.addEventListener('keydown', window._zapEsc);
     window._zapMode = true;
-    alert('Zap Mode ON! Click elements to remove them.\\nClick bookmarklet again to stop.');
 }`
     },
     {
@@ -186,9 +219,31 @@ if (images.length === 0) {
     document.removeEventListener('click', window._reverseZapClick, true);
     document.removeEventListener('mouseover', window._reverseZapHover);
     document.removeEventListener('mouseout', window._reverseZapOut);
+    document.removeEventListener('keydown', window._reverseZapEsc);
+    if (window._antiZapBanner) window._antiZapBanner.remove();
+    document.body.style.cursor = '';
     window._reverseZapMode = false;
-    alert('Reverse Zap Mode OFF');
 } else {
+    // Create visual indicator banner
+    const banner = document.createElement('div');
+    banner.id = '_antiZapBanner';
+    banner.innerHTML = '🎯 <strong>ANTI-ZAP MODE</strong> - Click an element to isolate it | Press <kbd>ESC</kbd> to cancel';
+    banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,#00cc66,#009944);color:#fff;padding:12px 20px;text-align:center;font-family:system-ui,sans-serif;font-size:14px;font-weight:500;z-index:2147483647;box-shadow:0 2px 10px rgba(0,0,0,0.3);border-bottom:2px solid #fff;animation:antiZapPulse 2s ease-in-out infinite;';
+    
+    // Add animation
+    if (!document.getElementById('_antiZapStyles')) {
+        const style = document.createElement('style');
+        style.id = '_antiZapStyles';
+        style.textContent = '@keyframes antiZapPulse{0%,100%{opacity:1}50%{opacity:0.85}}kbd{background:#fff;color:#009944;padding:2px 6px;border-radius:3px;font-family:monospace;font-size:12px;font-weight:bold;}';
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(banner);
+    window._antiZapBanner = banner;
+    
+    // Change cursor
+    document.body.style.cursor = 'crosshair';
+    
     window._reverseZapClick = function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -223,6 +278,9 @@ if (images.length === 0) {
         document.removeEventListener('click', window._reverseZapClick, true);
         document.removeEventListener('mouseover', window._reverseZapHover);
         document.removeEventListener('mouseout', window._reverseZapOut);
+        document.removeEventListener('keydown', window._reverseZapEsc);
+        if (window._antiZapBanner) window._antiZapBanner.remove();
+        document.body.style.cursor = '';
         window._reverseZapMode = false;
     };
     window._reverseZapHover = function(e) {
@@ -231,11 +289,22 @@ if (images.length === 0) {
     window._reverseZapOut = function(e) {
         e.target.style.outline = '';
     };
+    window._reverseZapEsc = function(e) {
+        if (e.key === 'Escape') {
+            document.removeEventListener('click', window._reverseZapClick, true);
+            document.removeEventListener('mouseover', window._reverseZapHover);
+            document.removeEventListener('mouseout', window._reverseZapOut);
+            document.removeEventListener('keydown', window._reverseZapEsc);
+            if (window._antiZapBanner) window._antiZapBanner.remove();
+            document.body.style.cursor = '';
+            window._reverseZapMode = false;
+        }
+    };
     document.addEventListener('click', window._reverseZapClick, true);
     document.addEventListener('mouseover', window._reverseZapHover);
     document.addEventListener('mouseout', window._reverseZapOut);
+    document.addEventListener('keydown', window._reverseZapEsc);
     window._reverseZapMode = true;
-    alert('Reverse Zap Mode ON! Click an element to keep it and remove everything else.');
 }`
     },
     {
